@@ -6,7 +6,7 @@ import { useGo } from '@/usego'
 const log = ref("")
 
 async function testcall() {
-	const { data } = await useGo('/get-word').text()
+	const { data } = await useGo('/public').text()
 	log.value = data.value
 }
 
