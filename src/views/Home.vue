@@ -21,7 +21,4 @@ async function testcall() {
 h1
 	text-decoration: underline
 	color: $theme
-
-	+atBlend
-		color: #fff
 </style>

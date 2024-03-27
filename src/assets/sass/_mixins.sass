@@ -1,4 +1,34 @@
 
-@mixin atBlend
-	@media (min-width: 800px)
+
+
+@mixin atSml
+	@media (min-width: 360px)
 		@content
+
+@mixin atMid
+	@media (min-width: 960px)
+		@content
+
+@mixin atLrg
+	@media (min-width: 1440px)
+		@content
+
+
+@mixin untilSml
+	@media (max-width: 359px)
+		@content
+
+@mixin untilMid
+	@media (max-width: 959px)
+		@content
+
+@mixin untilLrg
+	@media (max-width: 1439px)
+		@content
+
+
+@mixin slm($s,$h,$m:1rem)
+	font-size: $s
+	line-height: $h
+	margin-bottom: $m
+
