@@ -1,4 +1,10 @@
+<script setup>
+
+import AdminSlot from '@/components/AdminSlot.vue'
+
+</script>
 <template>
-	<h1>Admin</h1>
-	<h3>Create Event</h3>
+	<AdminSlot name="New Event">
+		<p>I'm wrapped?!</p>
+	</AdminSlot>
 </template>

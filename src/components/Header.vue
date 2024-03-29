@@ -20,7 +20,7 @@ const userBtn = computed(() => {
 				</h1>
 			</div>
 			<div class="header-slice hs-nav">
-				<p>Nav...</p>
+				<!-- TODO -->
 			</div>
 			<div class="header-slice hs-user">
 				<RouterLink to="/user" class="icon-btn">

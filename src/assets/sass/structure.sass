@@ -8,9 +8,85 @@
 		&-sml
 			max-width: 400px
 
+		&-mid
+			max-width: 900px
+
+		&-lrg
+			max-width: 1600px
+
 
 .card
 	border: 1px solid $border
 	border-radius: calc(0.5rem + 4px)
 	padding: 1.25rem
+
+	&.has-link
+		padding: 0
+		overflow: clip
+
+	&.has-action
+		padding: 0
+		overflow: clip
+		border-style: dashed
+
+		&:hover
+			border-style: solid
+
+.card-links
+	list-style: none outside
+	margin: 0
+	padding: 0
+
+	.card
+		margin-bottom: 1rem
+
+.card-link
+	display: flex
+	justify-content: space-between
+	align-items: center
+	padding: 1.25rem
+	gap: 1rem
+	transition: background .4s ease
+
+	&:hover
+		background: $border
+
+	> *
+		margin: 0 !important
+
+	.icon
+		width: 1.5rem
+		height: 1.5rem
+
+		img
+			width: 100%
+			height: 100%
+			vertical-align: top
+
+.card-action
+	display: flex
+	justify-content: center
+	padding: 1.25rem
+	color: $half
+	transition: color .4s ease, background .4s ease
+
+	> *
+		margin: 0 !important
+
+		img
+			width: 1.5rem
+			height: 1.5rem
+			vertical-align: top
+			position: relative
+			top: 0.2rem
+			opacity: 0.5
+			transition: opacity .4s ease
+
+	&:hover
+		background: $border
+		color: $text
+
+		> *
+			img
+				opacity: 1
 

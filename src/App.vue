@@ -4,6 +4,7 @@ import { onMounted } from 'vue'
 import { store } from '@/store.js'
 
 import Header from './components/Header.vue';
+import Footer from './components/Footer.vue';
 
 onMounted(() => {
 	const storedUsername = localStorage.getItem("goname")
@@ -19,4 +20,5 @@ onMounted(() => {
 	<main class="main">
 		<RouterView />
 	</main>
+	<Footer />
 </template>

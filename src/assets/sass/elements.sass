@@ -45,3 +45,34 @@
 
 	.icb-text
 		font-weight: bold
+
+
+.shadow-list
+	list-style: none outside
+	padding: 0
+	margin: 0 0 1rem
+
+	.shadow-card
+		margin-bottom: 1rem
+
+.shadow-card
+	display: block
+	border-radius: calc(0.5rem + 4px)
+	background: $border
+	animation: flutter 2s cubic-bezier(.4,0,.6,1) infinite
+	height: 4rem
+
+@keyframes flutter
+	50%
+		opacity: 0.5
+
+
+.admin-title
+	opacity: 0.32
+
+	img
+		width: 0.85em
+		height: 0.85em
+		vertical-align: top
+		position: relative
+		top: 0.3em

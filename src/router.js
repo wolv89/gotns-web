@@ -8,9 +8,9 @@ import CreateEventAdminView from './views/admin/CreateEvent.vue'
 
 const routes = [
 	{ path: '/', component: HomeView },
-	{ path: '/event/new', component: CreateEventAdminView },
-	{ path: '/event/:event', component: EventView },
-	{ path: '/user', component: UserView }
+	{ path: '/user', component: UserView },
+	{ path: '/:event', component: EventView },
+	{ path: '/event/new', component: CreateEventAdminView }
 ]
 
 

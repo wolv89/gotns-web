@@ -43,8 +43,10 @@ async function login() {
 
 }
 
-async function logout() {
-
+function logout() {
+	localStorage.removeItem("goken")
+	localStorage.removeItem("goname")
+	store.logout()
 }
 
 </script>

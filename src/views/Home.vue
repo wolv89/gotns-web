@@ -1,24 +1,50 @@
 <script setup>
 
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useGo } from '@/usego'
+import { store } from '@/store.js'
 
-const log = ref("")
+const loaded = ref(false)
+const events = ref(null)
 
-async function testcall() {
-	const { data } = await useGo('/public').text()
-	log.value = data.value
+async function loadEvents() {
+	const { data, error } = await useGo('/events').json()
+	if(!error.value) {
+		events.value = data.value
+	}
+	loaded.value = true
 }
+
+onMounted(() => { loadEvents() })
 
 </script>
 <template>
-	<h1>Home Route</h1>
-	<p>Test</p>
-	<button @click.prevent="testcall">KY!</button>
-	<div v-html="log"></div>
+	<div class="wrapper wrap-max-mid">
+
+		<section v-if="loaded">
+			<ol v-if="events" class="card-links">
+				<li v-for="event in events" class="card has-link" :key="event.id">
+					<RouterLink :to="`/${event.path}/`" class="card-link">
+						<h5>{{ event.name }}</h5>
+						<span class="icon">
+							<img src="@/assets/images/radix-ui-right.svg" />
+						</span>
+					</RouterLink>
+				</li>
+			</ol>
+			<p v-else>No active events found.</p>
+			<div v-if="store.user" class="card has-action">
+				<RouterLink to="/event/new/" class="card-action">
+					<h5>New Event <img src="@/assets/images/radix-ui-plus.svg" /></h5>
+				</RouterLink>
+			</div>
+		</section>
+		<ol v-else class="shadow-list">
+			<li v-for="i in 3" class="shadow-card">&nbsp;</li>
+		</ol>
+
+	</div>
 </template>
 <style lang="sass">
-h1
-	text-decoration: underline
-	color: $theme
+
 </style>
