@@ -23,9 +23,10 @@ onMounted(() => { loadEvents() })
 
 		<section v-if="loaded">
 			<ol v-if="events" class="card-links">
-				<li v-for="event in events" class="card has-link" :key="event.id">
+				<li v-for="event in events" :class="{'card': true, 'has-link': true, 'is-draft': !event.active}" :key="event.id">
 					<RouterLink :to="`/${event.path}/`" class="card-link">
-						<h5>{{ event.name }}</h5>
+						<h5 class="name">{{ event.name }}</h5>
+						<div class="status">{{ event.active ? 'Active' : 'Draft' }}</div>
 						<span class="icon">
 							<img src="@/assets/images/radix-ui-right.svg" />
 						</span>
@@ -45,6 +46,3 @@ onMounted(() => { loadEvents() })
 
 	</div>
 </template>
-<style lang="sass">
-
-</style>

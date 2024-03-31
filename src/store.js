@@ -9,8 +9,17 @@ export const store = reactive({
 			token: token
 		}
 	},
-	logout() {
+	logout(msg) {
+		localStorage.removeItem("goken")
+		localStorage.removeItem("goname")
 		this.user = null
+		if(msg != undefined && msg.length) {
+			this.alert = msg
+		}
+		else {
+			this.alert = "You have been logged out."
+		}
 	},
+	alert: null,
 	event: null
 })

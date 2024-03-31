@@ -31,6 +31,10 @@ const userBtn = computed(() => {
 				</RouterLink>
 			</div>
 		</div>
+		<div v-if="store.alert" class="wrapper alert">
+			<p v-html="store.alert"></p>
+			<span class="icon" @click="store.alert = null">x</span>
+		</div>
 	</header>
 </template>
 <style lang="sass">
@@ -54,6 +58,32 @@ const userBtn = computed(() => {
 
 			.icb-text
 				text-transform: capitalize
+
+	.alert
+		padding: 1rem
+		display: flex
+		justify-content: center
+		align-items: center
+		gap: 0.5rem
+
+		p
+			border: .25rem solid $theme
+			padding: .25rem 0.5rem
+
+		.icon
+			background: $theme
+			width: 1.5rem
+			height: 1.5rem
+			border-radius: 1rem
+			color: $background
+			text-align: center
+			font-weight: bold
+			+slm(1.25rem, 1.25rem, 0)
+			cursor: pointer
+			transition: background 0.4s ease
+
+			&:hover
+				background: $text
 
 .logo
 	margin: 0

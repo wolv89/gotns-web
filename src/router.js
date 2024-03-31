@@ -1,4 +1,5 @@
 import { createWebHistory, createRouter } from 'vue-router'
+import { store } from '@/store.js'
 
 import HomeView from './views/Home.vue'
 import EventView from './views/Event.vue'
@@ -17,7 +18,11 @@ const routes = [
 
 const router = createRouter({
 	history: createWebHistory(),
-	routes,
+	routes
+})
+
+router.beforeEach((to, from) => {
+	store.alert = ""
 })
 
 export default router

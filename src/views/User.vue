@@ -43,11 +43,6 @@ async function login() {
 
 }
 
-function logout() {
-	localStorage.removeItem("goken")
-	localStorage.removeItem("goname")
-	store.logout()
-}
 
 </script>
 <template>
@@ -58,7 +53,7 @@ function logout() {
 				<input type="text" placeholder="Username" name="username" v-model="username" />
 			</fieldset>
 			<fieldset>
-				<input type="password" placeholder="Password" name="password" v-model="password" />
+				<input type="password" placeholder="Password" name="password" v-model="password" @keyup.enter="login" />
 			</fieldset>
 			<fieldset>
 				<button v-if="!loading" class="btn" @click.prevent="login">Login</button>
@@ -69,7 +64,7 @@ function logout() {
 		<article v-else class="card">
 			<h3>Logout</h3>
 			<p>Logged in as <strong>{{ store.user.username }}</strong></p>
-			<button class="btn" @click.prevent="logout">Logout</button>
+			<button class="btn" @click.prevent="store.logout">Logout</button>
 		</article>
 	</div>
 </template>

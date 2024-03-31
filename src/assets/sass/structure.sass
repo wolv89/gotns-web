@@ -32,6 +32,14 @@
 		&:hover
 			border-style: solid
 
+	&.is-draft
+		.card-link
+			.name
+				opacity: 0.5
+
+			.status
+				color: $half
+
 .card-links
 	list-style: none outside
 	margin: 0
@@ -39,6 +47,11 @@
 
 	.card
 		margin-bottom: 1rem
+
+	.status
+		text-transform: uppercase
+		color: $theme
+		+slm(0.8rem, 1rem, 0)
 
 .card-link
 	display: flex
@@ -54,9 +67,16 @@
 	> *
 		margin: 0 !important
 
+	.name
+		flex-basis: 65%
+
+	.status
+		flex-basis: 20%
+
 	.icon
 		width: 1.5rem
 		height: 1.5rem
+		flex-basis: 10%
 
 		img
 			width: 100%
@@ -90,3 +110,16 @@
 			img
 				opacity: 1
 
+
+.instructed
+	padding: 1.5rem 0
+	display: flex
+	justify-content: space-between
+	align-items: center
+	gap: 3rem
+
+	&-instructions
+		flex-basis: 45%
+
+	&-actions
+		flex-basis: 50%
