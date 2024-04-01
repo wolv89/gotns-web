@@ -33,7 +33,9 @@ onMounted(() => { loadEvents() })
 					</RouterLink>
 				</li>
 			</ol>
-			<p v-else>No active events found.</p>
+			<div v-else class="card blank-space">
+				<p>No active events found.</p>
+			</div>
 			<div v-if="store.user" class="card has-action">
 				<RouterLink to="/event/new/" class="card-action">
 					<h5>New Event <img src="@/assets/images/radix-ui-plus.svg" /></h5>

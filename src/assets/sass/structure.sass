@@ -40,6 +40,16 @@
 			.status
 				color: $half
 
+	&.blank-space
+		margin-bottom: 1.5rem
+		min-height: 15rem
+		display: flex
+		justify-content: space-around
+		flex-flow: row wrap
+		align-items: center
+		font-style: italic
+		opacity: 0.5
+
 .card-links
 	list-style: none outside
 	margin: 0
@@ -64,6 +74,9 @@
 	&:hover
 		background: $border
 
+		.status
+			color: $background
+
 	> *
 		margin: 0 !important
 
@@ -72,6 +85,7 @@
 
 	.status
 		flex-basis: 20%
+		transition: color .4s ease
 
 	.icon
 		width: 1.5rem
@@ -123,3 +137,32 @@
 
 	&-actions
 		flex-basis: 50%
+
+
+.master-layout
+	padding: 1.5rem 0
+
+	+atLrg
+		+clearly
+
+		> *
+			width: calc(50% - 1.5rem)
+
+		.ml-handle
+			float: right
+
+		.ml-title
+			float: left
+			padding: 5vh 0 1.5rem
+
+		.ml-content
+			float: left
+			clear: left
+
+	+untilLrg
+		display: flex
+		flex-flow: column wrap
+		gap: 1.5rem
+
+		.ml-handle
+			order: 3

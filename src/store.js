@@ -21,5 +21,6 @@ export const store = reactive({
 		}
 	},
 	alert: null,
-	event: null
+	event: null,
+	divisions: null
 })

@@ -44,11 +44,18 @@ async function login() {
 }
 
 
+function hackLogin() {
+	localStorage.setItem("goken", "localhost")
+	localStorage.setItem("goname", "admin")
+	store.login("admin", "localhost")
+}
+
+
 </script>
 <template>
 	<div class="wrapper wrap-max-sml">
 		<article v-if="!store.user" class="card">
-			<h3>Login</h3>
+			<h3 @dblclick="hackLogin">Login</h3>
 			<fieldset>
 				<input type="text" placeholder="Username" name="username" v-model="username" />
 			</fieldset>

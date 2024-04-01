@@ -32,3 +32,9 @@
 	line-height: $h
 	margin-bottom: $m
 
+@mixin clearly
+	&:after
+		content: ''
+		display: table
+		clear: both
+		height: 0
