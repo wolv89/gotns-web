@@ -7,6 +7,8 @@ import { useRoute, useRouter } from 'vue-router'
 import AdminSlot from '@/components/AdminSlot.vue'
 import ButtonLoader from '@/components/ButtonLoader.vue'
 
+import PlayerList from '@/components/PlayerList.vue'
+
 import { store } from '@/store.js'
 
 const router = useRouter()
@@ -20,7 +22,8 @@ const loading = ref(false)
 const someError = ref('')
 const ferror = ref('')
 
-const MODE = ref(-1)
+const entered = ref([])
+
 
 async function loadEvent() {
 	const { data, error } = await useGo('/event/' + route.params.event).json()
@@ -61,8 +64,26 @@ async function loadDivision() {
 }
 
 
+async function loadPlayers() {
+	const { data, error } = await useGo('/admin/players').json()
+	if(error.value) {
+		someError.value = error.value
+		store.players = null
+	}
+	else {
+		if(data.value) {
+			store.players = data.value
+		}
+		else {
+			store.players = null
+		}
+	}
+}
+
+
 onMounted(() => {
 	loadEvent()
+	loadPlayers()
 })
 
 </script>
@@ -74,70 +95,25 @@ onMounted(() => {
 		<h4>Sorry, a problem occurred.</h4>
 		<p>Unable to load event or division</p>
 	</div>
-	<AdminSlot v-else :name="store.event.name + ' #' + division.name + ' // Init Division'">
-		<div class="init-steps">
-			<section v-if="MODE < 0" class="step">
-				<h3>Step 1: Division type</h3>
-				<ul class="xl-tabs">
-					<li>
-						<label @click.prevent="MODE = 0" class="card">
-							<div class="xl-icons">
-								<img src="@/assets/images/radix-ui-person.svg" />
-							</div>
-							<p>Singles</p>
-						</label>
-					</li>
-					<li>
-						<label @click.prevent="MODE = 1" class="card">
-							<div class="xl-icons more-than-one">
-								<img src="@/assets/images/radix-ui-person.svg" />
-								<img src="@/assets/images/radix-ui-person.svg" />
-							</div>
-							<p>Doubles</p>
-						</label>
-					</li>
-				</ul>
+	<AdminSlot v-else :name="division.name + ' #Add Entrants'" :desktop="true">
+		<div class="division-entrants">
+			<section class="de-players">
+				<PlayerList :entered="entered" />
+			</section>
+			<section class="de-entrants">
 			</section>
 		</div>
 	</AdminSlot>
 </template>
 <style lang="sass">
-.xl-tabs
+.division-entrants
 	display: flex
-	gap: 1.5rem
-	padding: 1.5rem 0
-	margin: 0 !important
-	list-style: none outside
+	gap: 1rem
+	justify-content: space-between
 
-	li
-		flex-basis: 50%
-		max-width: 16rem
+	.de-players
+		flex-basis: 35%
 
-	label
-		display: block
-		cursor: pointer
-		transition: background 0.4s ease
-
-		&:hover
-			background: $hover
-
-	.xl-icons
-		display: flex
-		height: 8rem
-		justify-content: center
-		gap: 1.5rem
-		align-items: center
-
-		img
-			width: 6.5rem
-			height: 6.5rem
-
-		&.more-than-one
-			img
-				width: 5rem
-				height: 5rem
-
-	p
-		font-weight: bold
-		text-align: center
+	.de-entrants
+		flex-basis: 65%
 </style>

@@ -6,20 +6,20 @@ import UserView from './views/User.vue'
 import EventView from './views/Event.vue'
 import DivisionView from './views/Division.vue'
 
-import CreateEventAdminView from './views/admin/CreateEvent.vue'
-import EditEventAdminView from './views/admin/EditEvent.vue'
-import CreateDivisionAdminView from './views/admin/CreateDivision.vue'
-import InitDivisionAdminView from './views/admin/InitDivision.vue'
+import EventCreateAdminView from './views/admin/EventCreate.vue'
+import EventEditAdminView from './views/admin/EventEdit.vue'
+import DivisionCreateAdminView from './views/admin/DivisionCreate.vue'
+import DivisionEntrantsAdminView from './views/admin/DivisionEntrants.vue'
 
 const routes = [
 	{ path: '/', component: HomeView },
 	{ path: '/user', component: UserView },
 	{ path: '/:event', component: EventView },
-	{ path: '/event/new', component: CreateEventAdminView },
-	{ path: '/:event/edit', component: EditEventAdminView },
+	{ path: '/event/new', component: EventCreateAdminView },
+	{ path: '/:event/edit', component: EventEditAdminView },
 	{ path: '/:event/:division', component: DivisionView },
-	{ path: '/:event/division/new', component: CreateDivisionAdminView },
-	{ path: '/:event/:division/init', component: InitDivisionAdminView }
+	{ path: '/:event/division/new', component: DivisionCreateAdminView },
+	{ path: '/:event/:division/entrants', component: DivisionEntrantsAdminView }
 ]
 
 

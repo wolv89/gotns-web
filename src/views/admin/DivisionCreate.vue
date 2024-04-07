@@ -11,6 +11,7 @@ import ButtonLoader from '@/components/ButtonLoader.vue'
 
 import DSIKnockout from '@/assets/images/division-structure-knockout.svg'
 import DSIFreeform from '@/assets/images/division-structure-freeform.svg'
+import RUIPerson from '@/assets/images/radix-ui-person.svg'
 
 const router = useRouter()
 const route = useRoute()
@@ -20,14 +21,15 @@ const loading = ref(false)
 const someError = ref('')
 const ferror = ref('')
 
-const divClassTabs = [
+const divStyleTabs = [
 	{ name: 'Knockout', icon: DSIKnockout },
 	{ name: 'Freeform', icon: DSIFreeform }
 ]
 
 const divname = ref("")
-const divclass = ref(0)
+const divstyle = ref(0)
 const divstate = ref(false)
+const divteams = ref(false)
 
 async function createDivision() {
 
@@ -48,7 +50,8 @@ async function createDivision() {
 	const submission = {
 		name: divname.value,
 		state: divstate.value,
-		class: divclass.value
+		style: divstyle.value,
+		teams: divteams.value
 	}
 
 	const { data, error } = await useGo('/admin/event/' + store.event.id + '/division/new', {
@@ -58,7 +61,7 @@ async function createDivision() {
 	if(!error.value) {
 		const r = data.value
 		if(r.result) {
-			router.push({path: '/' + store.event.path + '/' + r.return + '/init'})
+			router.push({path: '/' + store.event.path + '/' + r.return + '/edit'})
 		}
 		else {
 			ferror.value = r.response
@@ -104,7 +107,7 @@ onMounted(() => {
 		<h4>Sorry, a problem occurred.</h4>
 		<p>Unable to load parent event</p>
 	</div>
-	<AdminSlot v-else :name="store.event.name + ' // New Division'">
+	<AdminSlot v-else name="#New Division">
 		<div class="instructed">
 			<div class="instructed-instructions">
 				<h4>Create a new division</h4>
@@ -127,8 +130,30 @@ onMounted(() => {
 					</fieldset>
 					<fieldset>
 						<ol class="tab-selector">
-							<li v-for="(tab,t) in divClassTabs" :key="t">
-								<label @click.prevent="divclass = t" :class="{selected: t == divclass}">
+							<li>
+								<label @click.prevent="divteams = false" :class="{selected: !divteams}">
+									<span class="tab-icon">
+										<img :src="RUIPerson" />
+									</span>
+									<p>Singles</p>
+								</label>
+							</li>
+							<li>
+								<label @click.prevent="divteams = true" :class="{selected: divteams}">
+									<span class="tab-icon dual-icon">
+										<img :src="RUIPerson" />
+										<img :src="RUIPerson" />
+									</span>
+									<p>Doubles</p>
+								</label>
+							</li>
+						</ol>
+						<input type="hidden" name="divteams" v-model="divteams" />
+					</fieldset>
+					<fieldset>
+						<ol class="tab-selector">
+							<li v-for="(tab,t) in divStyleTabs" :key="t">
+								<label @click.prevent="divstyle = t" :class="{selected: t == divstyle}">
 									<span class="tab-icon">
 										<img :src="tab.icon" />
 									</span>
@@ -136,7 +161,7 @@ onMounted(() => {
 								</label>
 							</li>
 						</ol>
-						<input type="hidden" name="divclass" v-model="divclass" />
+						<input type="hidden" name="divteams" v-model="divstyle" />
 					</fieldset>
 					<fieldset>
 						<label><input type="checkbox" v-model="divstate" /> Publish division</label>
@@ -177,6 +202,10 @@ onMounted(() => {
 
 		.tab-icon
 			opacity: 0.25
+
+			img
+				min-width: 2.5rem
+				min-height: 2.5rem
 
 		&.selected
 			background: $background

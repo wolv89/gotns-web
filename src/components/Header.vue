@@ -20,7 +20,9 @@ const userBtn = computed(() => {
 				</h1>
 			</div>
 			<div class="header-slice hs-nav">
-				<!-- TODO -->
+				<nav class="header-nav" v-if="store.event">
+					<h3>{{ store.event.name }}</h3>
+				</nav>
 			</div>
 			<div class="header-slice hs-user">
 				<RouterLink to="/user" class="icon-btn">
@@ -84,6 +86,9 @@ const userBtn = computed(() => {
 
 			&:hover
 				background: $text
+
+	&-nav
+		padding: 0.5rem
 
 .logo
 	margin: 0

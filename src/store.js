@@ -22,5 +22,6 @@ export const store = reactive({
 	},
 	alert: null,
 	event: null,
-	divisions: null
+	divisions: null,
+	players: null
 })

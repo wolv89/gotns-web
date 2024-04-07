@@ -4,6 +4,8 @@ import { ref } from 'vue'
 import { useGo } from '@/usego'
 import { useRouter } from 'vue-router'
 
+import { store } from '@/store.js'
+
 import AdminSlot from '@/components/AdminSlot.vue'
 import ButtonLoader from '@/components/ButtonLoader.vue'
 
@@ -16,7 +18,7 @@ const eventname = ref("")
 const eventdesc = ref("")
 const eventstate = ref(false)
 
-async function createEvent() {
+async function editEvent() {
 
 	ferror.value = ''
 
@@ -33,14 +35,14 @@ async function createEvent() {
 		state: eventstate.value
 	}
 
-	const { data, error } = await useGo('/admin/event/new', {
+	const { data, error } = await useGo('/admin/event/' + store.event.id + '/edit', {
 		body: JSON.stringify(submission)
 	}).post().json()
 
 	if(!error.value) {
 		const r = data.value
 		if(r.result) {
-			router.push({path: '/' + r.return, query: {created: true}})
+			// router.push({path: '/' + r.return, query: {created: true}})
 		}
 		else {
 			ferror.value = r.response
@@ -56,11 +58,16 @@ async function createEvent() {
 
 </script>
 <template>
-	<AdminSlot name="New Event">
+	<div v-if="!store.event" class="page-error">
+		<h4>Sorry, a problem occurred.</h4>
+		<p>Unable to load parent event</p>
+	</div>
+	<AdminSlot v-else name="#Edit Event">
 		<div class="instructed">
 			<div class="instructed-instructions">
-				<h4>Create a new event</h4>
+				<h4>Edit this event</h4>
 				<h6>Event Name</h6>
+				<p>?? ...</p>
 				<p>This is required. Suggest using a clear/distinct name such as "Club Championships 2024". This will automatically create a URL-friendly path, based on the name, e.g:</p>
 				<pre>domain.com/club-championships-2024/</pre>
 				<h6>Event Description</h6>
@@ -80,7 +87,7 @@ async function createEvent() {
 						<label><input type="checkbox" v-model="eventstate" /> Publish event</label>
 					</fieldset>
 					<fieldset>
-						<button v-if="!loading" class="btn" @click.prevent="createEvent">Create Event</button>
+						<button v-if="!loading" class="btn" @click.prevent="editEvent">Update Event</button>
 						<ButtonLoader v-else />
 					</fieldset>
 					<p class="error-message" v-if="ferror">{{ ferror }}</p>
