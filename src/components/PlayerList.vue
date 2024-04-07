@@ -1,6 +1,8 @@
 <script setup>
 
 import { ref, computed, watch } from 'vue'
+import { useGo } from '@/usego'
+
 import { store } from '@/store.js'
 
 import ButtonLoader from '@/components/ButtonLoader.vue'
@@ -9,12 +11,13 @@ const props = defineProps(['entered'])
 
 const SEARCHMIN = 2
 
-const loading = ref(false)
-const error = ref("")
 
 const playerSearch = ref("")
+
 const newPlayerFirstname = ref("")
 const newPlayerLastname = ref("")
+const newPlayerLoading = ref(false)
+const newPlayerError = ref("")
 
 const thePlayers = computed(() => {
 
@@ -92,9 +95,51 @@ function enterPlayer(id) {
 }
 
 function hasEntered(id) {
-	return props.entered.value.indexOf(id) >= 0
+	return props.entered.indexOf(id) >= 0
 }
 
+
+async function createPlayer() {
+
+	newPlayerError.value = ""
+
+	if(!newPlayerFirstname.value || !newPlayerLastname.value) {
+		newPlayerError.value = "First and last names are required"
+		return
+	}
+
+	newPlayerLoading.value = true
+
+	const submission = {
+		firstname: newPlayerFirstname.value,
+		lastname: newPlayerLastname.value
+	}
+
+	const { data, error } = await useGo('/admin/player/new', {
+		body: JSON.stringify(submission)
+	}).post().json()
+
+	if(!error.value) {
+		const r = data.value
+		if(r.result) {
+			store.players.push({
+				id: +r.return,
+				firstname: submission.firstname,
+				lastname: submission.lastname
+			})
+			playerSearch.value = playerSearch.value.split(" ")[0]
+		}
+		else {
+			newPlayerError.value = r.response
+		}
+	}
+	else {
+		newPlayerError.value = error.value
+	}
+
+	newPlayerLoading.value = false
+
+}
 
 
 
@@ -117,10 +162,10 @@ function hasEntered(id) {
 				<input type="text" v-model="newPlayerLastname" placeholder="Last name" />
 			</fieldset>
 			<fieldset>
-				<button v-if="!loading" class="btn" @click.prevent="createPlayer">Add new Player</button>
+				<button v-if="!newPlayerLoading" class="btn" @click.prevent="createPlayer">Add new Player</button>
 				<ButtonLoader v-else />
 			</fieldset>
-			<p class="error-message" v-if="error">{{ error }}</p>
+			<p class="error-message" v-if="newPlayerError">{{ newPlayerError }}</p>
 		</article>
 		<article class="player-list">
 			<ol v-if="thePlayers.length" class="the-players">

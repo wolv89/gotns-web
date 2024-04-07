@@ -14,6 +14,8 @@ import { store } from '@/store.js'
 const router = useRouter()
 const route = useRoute()
 
+const SEEDMAX = 32
+
 const loadedEvent = ref(false)
 const loadedDivision = ref(false)
 const division = ref(null)
@@ -23,6 +25,13 @@ const someError = ref('')
 const ferror = ref('')
 
 const entered = ref([])
+const seeds = ref(Array(SEEDMAX + 1))
+
+const newEntry = ref({
+	player1: null,
+	player2: null,
+	seed: 0
+})
 
 
 async function loadEvent() {
@@ -84,6 +93,13 @@ async function loadPlayers() {
 onMounted(() => {
 	loadEvent()
 	loadPlayers()
+
+	for (let s = 0; s <= SEEDMAX; s++) {
+		if(s > 10 & s < 20 & s % 2 == 0)
+			seeds.value[s] = true
+		else
+			seeds.value[s] = false
+	}
 })
 
 </script>
@@ -100,6 +116,26 @@ onMounted(() => {
 			<section class="de-players">
 				<PlayerList :entered="entered" />
 			</section>
+			<section class="de-new-entrant">
+				<article class="new-entrant card dark-card">
+					<h5>{{ division.teams ? "Team" : "Solo" }} Entry</h5>
+					<fieldset>
+						<p v-if="newEntry.player1">{{ newEntry.player1.firstname }} {{ newEntry.player1.lastname }}</p>
+						<p v-else><em>Select player</em></p>
+					</fieldset>
+					<fieldset v-if="division.teams">
+						<p v-if="newEntry.player2">{{ newEntry.player2.firstname }} {{ newEntry.player2.lastname }}</p>
+						<p v-else><em>Select player</em></p>
+					</fieldset>
+					<fieldset class="dropdown">
+						<label>Seed</label> <select v-model="newEntry.seed">
+							<option v-for="(seed,s) in seeds" :key="s" :value="s" :disabled="seed">
+								{{ s > 0 ? s : "None" }}
+							</option>
+						</select>
+					</fieldset>
+				</article>
+			</section>
 			<section class="de-entrants">
 			</section>
 		</div>
@@ -107,13 +143,11 @@ onMounted(() => {
 </template>
 <style lang="sass">
 .division-entrants
+	padding: 1rem 0
 	display: flex
-	gap: 1rem
+	gap: 2rem
 	justify-content: space-between
 
-	.de-players
-		flex-basis: 35%
-
-	.de-entrants
-		flex-basis: 65%
+	section
+		flex-basis: 33%
 </style>
