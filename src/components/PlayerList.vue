@@ -45,7 +45,7 @@ const thePlayers = computed(() => {
 		const filteredList = []
 
 		for(let p in store.players) {
-			const player = store.players.value[p]
+			const player = store.players[p]
 			if(props.entered.indexOf(player.id) < 0) {
 				filteredList.push(player)
 			}
@@ -128,6 +128,8 @@ async function createPlayer() {
 				lastname: submission.lastname
 			})
 			playerSearch.value = playerSearch.value.split(" ")[0]
+			newPlayerFirstname.value = ""
+			newPlayerLastname.value = ""
 		}
 		else {
 			newPlayerError.value = r.response
@@ -169,7 +171,7 @@ async function createPlayer() {
 		</article>
 		<article class="player-list">
 			<ol v-if="thePlayers.length" class="the-players">
-				<li v-for="player in thePlayers" :key="player.id" :class="{'the-player': true, 'has-entered': hasEntered(player.id)}" @click.prevent="enterPlayer(player.id)">
+				<li v-for="player in thePlayers" :key="player.id" :class="{'the-player': true, 'has-entered': hasEntered(player.id)}" @click.prevent="$emit('selectplayer', player)">
 					<div class="the-player-firstname">{{ player.firstname }}</div>
 					<div class="the-player-lastname">{{ player.lastname }}</div>
 					<div class="the-player-action">

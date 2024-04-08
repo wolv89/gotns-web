@@ -61,7 +61,7 @@ async function createDivision() {
 	if(!error.value) {
 		const r = data.value
 		if(r.result) {
-			router.push({path: '/' + store.event.path + '/' + r.return + '/edit'})
+			router.push({path: '/' + store.event.path + '/' + r.return + '/entrants'})
 		}
 		else {
 			ferror.value = r.response

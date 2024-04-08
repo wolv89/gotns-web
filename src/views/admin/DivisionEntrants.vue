@@ -1,20 +1,21 @@
 <script setup>
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useGo } from '@/usego'
 import { useRoute, useRouter } from 'vue-router'
 
 import AdminSlot from '@/components/AdminSlot.vue'
-import ButtonLoader from '@/components/ButtonLoader.vue'
+import SuperLoader from '@/components/SuperLoader.vue'
 
 import PlayerList from '@/components/PlayerList.vue'
+import EntrantList from '@/components/EntrantList.vue'
 
 import { store } from '@/store.js'
 
 const router = useRouter()
 const route = useRoute()
 
-const SEEDMAX = 32
+const SEEDMAX = 16
 
 const loadedEvent = ref(false)
 const loadedDivision = ref(false)
@@ -25,6 +26,7 @@ const someError = ref('')
 const ferror = ref('')
 
 const entered = ref([])
+const entries = ref([])
 const seeds = ref(Array(SEEDMAX + 1))
 
 const newEntry = ref({
@@ -95,12 +97,87 @@ onMounted(() => {
 	loadPlayers()
 
 	for (let s = 0; s <= SEEDMAX; s++) {
-		if(s > 10 & s < 20 & s % 2 == 0)
-			seeds.value[s] = true
-		else
-			seeds.value[s] = false
+		seeds.value[s] = false
 	}
 })
+
+
+const canAdd = computed(() => {
+	if(newEntry.value.player1 == null) return false
+	if(division.value.teams) {
+		if(newEntry.value.player2 == null) return false
+	}
+	return true
+})
+
+
+function selectPlayer(player) {
+
+	if(newEntry.value.player1 == null) {
+		newEntry.value.player1 = player
+	}
+	else if(division.value.teams && newEntry.value.player2 == null) {
+		newEntry.value.player2 = player
+	}
+
+}
+
+
+function clearPlayer(i) {
+
+	let id
+
+	if(i == 2) {
+		id = newEntry.value.player2.id
+		newEntry.value.player2 = null
+	}
+	else {
+		id = newEntry.value.player1.id
+		newEntry.value.player1 = null
+	}
+
+	entered.value.splice(entered.value.indexOf(id), 1)
+
+}
+
+
+function addEntry() {
+
+	entries.value.push(newEntry.value)
+	entered.value.push(newEntry.value.player1.id)
+	if(division.value.teams) {
+		entered.value.push(newEntry.value.player2.id)
+	}
+	if(newEntry.value.seed > 0) {
+		seeds.value[newEntry.value.seed] = true
+	}
+
+	newEntry.value = {
+		player1: null,
+		player2: null,
+		seed: 0
+	}
+
+}
+
+
+function removeEntry(e) {
+
+	const entry = entries.value[e]
+
+	entered.value.splice(entered.value.indexOf(entry.player1.id), 1)
+	if(entry.player2) {
+		entered.value.splice(entered.value.indexOf(entry.player2.id), 1)
+	}
+
+	if(entry.seed > 0) {
+		seeds.value[entry.seed] = false
+	}
+
+	entries.value.splice(e, 1)
+
+}
+
 
 </script>
 <template>
@@ -114,31 +191,38 @@ onMounted(() => {
 	<AdminSlot v-else :name="division.name + ' #Add Entrants'" :desktop="true">
 		<div class="division-entrants">
 			<section class="de-players">
-				<PlayerList :entered="entered" />
+				<PlayerList :entered="entered" @selectplayer="selectPlayer" />
 			</section>
 			<section class="de-new-entrant">
 				<article class="new-entrant card dark-card">
 					<h5>{{ division.teams ? "Team" : "Solo" }} Entry</h5>
 					<fieldset>
-						<p v-if="newEntry.player1">{{ newEntry.player1.firstname }} {{ newEntry.player1.lastname }}</p>
+						<p v-if="newEntry.player1">{{ newEntry.player1.firstname }} {{ newEntry.player1.lastname }}<img @click.prevent="newEntry.value.player1 = null" class="cancel" src="@/assets/images/radix-ui-cancel.svg" /></p>
 						<p v-else><em>Select player</em></p>
 					</fieldset>
 					<fieldset v-if="division.teams">
-						<p v-if="newEntry.player2">{{ newEntry.player2.firstname }} {{ newEntry.player2.lastname }}</p>
+						<p v-if="newEntry.player2">{{ newEntry.player2.firstname }} {{ newEntry.player2.lastname }}<img @click.prevent="newEntry.value.player1 = null" class="cancel" src="@/assets/images/radix-ui-cancel.svg" /></p>
 						<p v-else><em>Select player</em></p>
 					</fieldset>
-					<fieldset class="dropdown">
+					<fieldset class="dropdown spaced">
 						<label>Seed</label> <select v-model="newEntry.seed">
 							<option v-for="(seed,s) in seeds" :key="s" :value="s" :disabled="seed">
 								{{ s > 0 ? s : "None" }}
 							</option>
 						</select>
 					</fieldset>
+					<fieldset v-if="canAdd">
+						<button class="btn themed" @click.prevent="addEntry">Add Entry</button>
+					</fieldset>
 				</article>
 			</section>
 			<section class="de-entrants">
+				<EntrantList :entrants="entries" @remove="removeEntry" />
 			</section>
 		</div>
+		<SuperLoader v-if="loading">
+			<p>Entering players in division</p>
+		</SuperLoader>
 	</AdminSlot>
 </template>
 <style lang="sass">
@@ -150,4 +234,8 @@ onMounted(() => {
 
 	section
 		flex-basis: 33%
+
+	.new-entrant
+		img.cancel
+			filter: invert(16%) sepia(71%) saturate(4499%) hue-rotate(351deg) brightness(105%) contrast(88%)
 </style>
