@@ -2,7 +2,7 @@
 
 import { ref, onMounted, computed } from 'vue'
 import { useGo } from '@/usego'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 
 import AdminSlot from '@/components/AdminSlot.vue'
 import SuperLoader from '@/components/SuperLoader.vue'
@@ -12,7 +12,6 @@ import EntrantList from '@/components/EntrantList.vue'
 
 import { store } from '@/store.js'
 
-const router = useRouter()
 const route = useRoute()
 
 const SEEDMAX = 16
@@ -123,24 +122,6 @@ function selectPlayer(player) {
 }
 
 
-function clearPlayer(i) {
-
-	let id
-
-	if(i == 2) {
-		id = newEntry.value.player2.id
-		newEntry.value.player2 = null
-	}
-	else {
-		id = newEntry.value.player1.id
-		newEntry.value.player1 = null
-	}
-
-	entered.value.splice(entered.value.indexOf(id), 1)
-
-}
-
-
 function addEntry() {
 
 	entries.value.push(newEntry.value)
@@ -175,6 +156,59 @@ function removeEntry(e) {
 	}
 
 	entries.value.splice(e, 1)
+
+}
+
+
+async function confirmEntries() {
+
+	ferror.value = ''
+
+	if(!entries.value.length) {
+		ferror.value = 'No entrants?!'
+		return
+	}
+
+	loading.value = true
+
+	const submission = []
+	const teams = division.value.teams ? 1 : 0
+
+	for(let e in entries.value) {
+		const entry = entries.value[e]
+		if(teams) {
+			submission.push({
+				player1: entry.player1.id,
+				player2: entry.player2.id,
+				seed: entry.seed
+			})
+		}
+		else {
+			submission.push({
+				player1: entry.player1.id,
+				seed: entry.seed
+			})
+		}
+	}
+
+	const { data, error } = await useGo('/admin/division/' + division.value.id + '/entrants/new?teams=' + teams, {
+		body: JSON.stringify(submission)
+	}).post().json()
+
+	if(!error.value) {
+		const r = data.value
+		if(r.result) {
+			// Success ?
+		}
+		else {
+			ferror.value = r.response
+		}
+	}
+	else {
+		ferror.value = error.value
+	}
+
+	loading.value = false
 
 }
 
@@ -217,7 +251,7 @@ function removeEntry(e) {
 				</article>
 			</section>
 			<section class="de-entrants">
-				<EntrantList :entrants="entries" @remove="removeEntry" />
+				<EntrantList :entrants="entries" :error="ferror" @remove="removeEntry" @confirm="confirmEntries" />
 			</section>
 		</div>
 		<SuperLoader v-if="loading">
@@ -238,4 +272,8 @@ function removeEntry(e) {
 	.new-entrant
 		img.cancel
 			filter: invert(16%) sepia(71%) saturate(4499%) hue-rotate(351deg) brightness(105%) contrast(88%)
+
+		select
+			option:disabled
+				display: none
 </style>

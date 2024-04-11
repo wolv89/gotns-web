@@ -1,6 +1,6 @@
 <script setup>
 
-const props = defineProps(['entrants'])
+const props = defineProps(['entrants', 'error'])
 
 </script>
 <template>
@@ -10,6 +10,7 @@ const props = defineProps(['entrants'])
 			<fieldset v-if="entrants.length > 1">
 				<button class="btn" @click.prevent="$emit('confirm')">Confirm Entries</button>
 			</fieldset>
+			<p v-if="props.error" v-html="props.error"></p>
 		</article>
 		<article class="entrant-list">
 			<ol v-if="entrants.length" class="the-entrants">
