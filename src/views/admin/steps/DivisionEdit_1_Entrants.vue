@@ -9,7 +9,7 @@ import SuperLoader from '@/components/SuperLoader.vue'
 import PlayerList from '@/components/PlayerList.vue'
 import EntrantList from '@/components/EntrantList.vue'
 
-const SEEDMAX = 16
+const SEEDMAX = 8
 
 const props = defineProps(['division'])
 
@@ -48,7 +48,7 @@ function selectPlayer(player) {
 	if(newEntry.value.player1 == null) {
 		newEntry.value.player1 = player.id
 	}
-	else if(division.value.teams && newEntry.value.player2 == null) {
+	else if(props.division.teams && newEntry.value.player2 == null) {
 		newEntry.value.player2 = player.id
 	}
 
@@ -161,11 +161,11 @@ async function confirmEntries() {
 			<article class="new-entrant card dark-card">
 				<h5>{{ division.teams ? "Team" : "Solo" }} Entry</h5>
 				<fieldset>
-					<p v-if="newEntry.player1">{{ store.getPlayerName(newEntry.player1) }}<img @click.prevent="newEntry.value.player1 = null" class="cancel" src="@/assets/images/radix-ui-cancel.svg" /></p>
+					<p v-if="newEntry.player1">{{ store.getPlayerName(newEntry.player1) }}<img @click.prevent="newEntry.player1 = null" class="cancel" src="@/assets/images/radix-ui-cancel.svg" /></p>
 					<p v-else><em>Select player</em></p>
 				</fieldset>
 				<fieldset v-if="division.teams">
-					<p v-if="newEntry.player2">{{ store.getPlayerName(newEntry.player2) }}<img @click.prevent="newEntry.value.player1 = null" class="cancel" src="@/assets/images/radix-ui-cancel.svg" /></p>
+					<p v-if="newEntry.player2">{{ store.getPlayerName(newEntry.player2) }}<img @click.prevent="newEntry.player2 = null" class="cancel" src="@/assets/images/radix-ui-cancel.svg" /></p>
 					<p v-else><em>Select player</em></p>
 				</fieldset>
 				<fieldset class="dropdown spaced">

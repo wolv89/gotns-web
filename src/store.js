@@ -30,7 +30,7 @@ export const store = reactive({
 		this.playermap.set(newplayer.id, newplayer)
 	},
 	getPlayerName(id) {
-		player = this.playermap.get(id)
+		let player = this.playermap.get(id)
 		if(!player) return 'Player not found'
 		return player.firstname + ' ' + player.lastname
 	}
