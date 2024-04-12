@@ -68,7 +68,7 @@ const isFiltering = computed(() => {
 })
 
 
-watch(playerSearch, async(newPlayerSearch, oldPlayerSearch) => {
+watch(playerSearch, async(newPlayerSearch, _) => {
 
 	if(newPlayerSearch.length >= SEARCHMIN && thePlayers.value.length <= 0) {
 		const name = newPlayerSearch.split(" ")
@@ -89,10 +89,6 @@ function capitalise(word) {
 	return word.charAt(0).toUpperCase() + word.slice(1)
 }
 
-
-function enterPlayer(id) {
-	// -- TODO
-}
 
 function hasEntered(id) {
 	return props.entered.indexOf(id) >= 0
@@ -122,7 +118,7 @@ async function createPlayer() {
 	if(!error.value) {
 		const r = data.value
 		if(r.result) {
-			store.players.push({
+			store.addPlayer({
 				id: +r.return,
 				firstname: submission.firstname,
 				lastname: submission.lastname
@@ -142,8 +138,6 @@ async function createPlayer() {
 	newPlayerLoading.value = false
 
 }
-
-
 
 
 </script>

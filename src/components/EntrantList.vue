@@ -1,5 +1,7 @@
 <script setup>
 
+import { store } from '@/store.js'
+
 const props = defineProps(['entrants', 'error'])
 
 </script>
@@ -16,8 +18,8 @@ const props = defineProps(['entrants', 'error'])
 			<ol v-if="entrants.length" class="the-entrants">
 				<li v-for="(entrant,e) in entrants" :key="e" class="the-entrant">
 					<img @click="$emit('remove',e)" class="cancel" src="@/assets/images/radix-ui-cancel.svg" />
-					<p v-if="entrant.player1"><span v-if="+entrant.seed > 0" class="seed">{{ entrant.seed }}</span> {{ entrant.player1.firstname }} {{ entrant.player1.lastname }}</p>
-					<p v-if="entrant.player2"><span v-if="+entrant.seed > 0" class="seed">{{ entrant.seed }}</span> {{ entrant.player2.firstname }} {{ entrant.player2.lastname }}</p>
+					<p v-if="entrant.player1"><span v-if="+entrant.seed > 0" class="seed">{{ entrant.seed }}</span> {{ store.getPlayerName(entrant.player1) }}</p>
+					<p v-if="entrant.player2"><span v-if="+entrant.seed > 0" class="seed">{{ entrant.seed }}</span> {{ store.getPlayerName(entrant.player2) }}</p>
 				</li>
 			</ol>
 			<ol v-else class="empty-list">

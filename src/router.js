@@ -9,7 +9,7 @@ import DivisionView from './views/Division.vue'
 import EventCreateAdminView from './views/admin/EventCreate.vue'
 import EventEditAdminView from './views/admin/EventEdit.vue'
 import DivisionCreateAdminView from './views/admin/DivisionCreate.vue'
-import DivisionEntrantsAdminView from './views/admin/DivisionEntrants.vue'
+import DivisionEditAdminView from './views/admin/DivisionEdit.vue'
 
 const routes = [
 	{ path: '/', component: HomeView },
@@ -19,7 +19,7 @@ const routes = [
 	{ path: '/:event/edit', component: EventEditAdminView },
 	{ path: '/:event/:division', component: DivisionView },
 	{ path: '/:event/division/new', component: DivisionCreateAdminView },
-	{ path: '/:event/:division/entrants', component: DivisionEntrantsAdminView }
+	{ path: '/:event/:division/edit', component: DivisionEditAdminView }
 ]
 
 
