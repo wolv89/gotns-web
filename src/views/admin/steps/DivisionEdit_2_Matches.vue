@@ -1,6 +1,6 @@
 <script setup>
 
-import { ref, onMounted } from 'vue'
+import { ref, provide, onMounted } from 'vue'
 import { useGo } from '@/usego'
 import { store } from '@/store.js'
 
@@ -14,6 +14,9 @@ const loadingError = ref('')
 const entrants = ref([])
 
 const SELECTED = ref(null)
+const OPPONENT = ref("")
+
+provide('opponent', OPPONENT)
 
 const loading = ref(false)
 
@@ -40,12 +43,41 @@ function selectEntrant(index) {
 
 	if(SELECTED.value == index) {
 		SELECTED.value = null
+		OPPONENT.value = ""
 	}
 	else {
 		SELECTED.value = index
+		OPPONENT.value = getOpponentMarkup(index)
 	}
 
 }
+
+
+function handlePlaced() {
+
+	SELECTED.value = null
+	OPPONENT.value = null
+
+}
+
+
+function getOpponentMarkup(index) {
+
+	let seed_markup = ""
+	if(entrants.value[index].seed > 0) {
+		seed_markup = '<span class="seed">' + entrants.value[index].seed + '</span> '
+	}
+
+	let oppo_markup = '<p>' + seed_markup + store.getPlayerName(entrants.value[index].player1) + '</p>'
+
+	if(entrants.value[index].player2) {
+		oppo_markup += '<p>' + seed_markup + store.getPlayerName(entrants.value[index].player2) + '</p>'
+	}
+
+	return oppo_markup
+
+}
+
 
 
 </script>
@@ -78,10 +110,10 @@ function selectEntrant(index) {
 		</section>
 		<section class="matches-listout">
 			<h5>Matchups</h5>
-			<Matchups :entrantcount="entrants.length" />
+			<Matchups :entrants="entrants" :selected="SELECTED" :opponent="OPPONENT" @place="handlePlaced" />
 		</section>
-		<section class="matches-confirmation">
-			<article class="matches-summary card">
+		<section class="matches-confirmation card">
+			<article class="matches-summary">
 				<h6>Summary</h6>
 			</article>
 		</section>
@@ -96,6 +128,7 @@ function selectEntrant(index) {
 	display: flex
 	gap: 2rem
 	justify-content: space-between
+	align-items: flex-start
 
 	section
 		flex-basis: 25%
@@ -160,6 +193,6 @@ function selectEntrant(index) {
 
 			&.is-moving
 				border-style: dashed
-				transform: translateX(50%)
+				transform: translateX(15%)
 
 </style>
