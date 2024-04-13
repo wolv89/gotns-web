@@ -10,7 +10,7 @@ const userBtn = computed(() => {
 
 </script>
 <template>
-	<header class="header">
+	<header class="header" id="header">
 		<div class="wrapper">
 			<div class="header-slice hs-logo">
 				<h1 class="logo">

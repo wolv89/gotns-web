@@ -1,6 +1,6 @@
 <script setup>
 
-import { ref, provide, onMounted } from 'vue'
+import { ref, provide, onMounted, nextTick } from 'vue'
 import { useGo } from '@/usego'
 import { store } from '@/store.js'
 
@@ -14,10 +14,10 @@ const loadingError = ref('')
 const entrants = ref([])
 
 const SELECTED = ref(null)
-const OPPONENT = ref("")
+const SLOTTED = ref(0)
+provide('getOpponentMarkup', getOpponentMarkup)
 
-provide('opponent', OPPONENT)
-
+const lockEntrantsCard = ref(false)
 const loading = ref(false)
 
 
@@ -29,8 +29,12 @@ async function loadEntrants() {
 	}
 	else {
 		entrants.value = data.value
+		for(let e in entrants.value) {
+			entrants.value[e].used = false
+		}
 	}
 	loadedEntrants.value = true
+	setupScrollHandler()
 }
 
 
@@ -43,11 +47,9 @@ function selectEntrant(index) {
 
 	if(SELECTED.value == index) {
 		SELECTED.value = null
-		OPPONENT.value = ""
 	}
 	else {
 		SELECTED.value = index
-		OPPONENT.value = getOpponentMarkup(index)
 	}
 
 }
@@ -55,13 +57,24 @@ function selectEntrant(index) {
 
 function handlePlaced() {
 
+	entrants.value[SELECTED.value].used = true
+	SLOTTED.value += 1
 	SELECTED.value = null
-	OPPONENT.value = null
+
+}
+
+
+function handleCleared(i) {
+
+	entrants.value[i].used = false
+	SLOTTED.value -= 1
 
 }
 
 
 function getOpponentMarkup(index) {
+
+	if(index == null || +index < 0) return '<p class="issue">Unidentified player</p>'
 
 	let seed_markup = ""
 	if(entrants.value[index].seed > 0) {
@@ -79,6 +92,58 @@ function getOpponentMarkup(index) {
 }
 
 
+let esCard, esOffset, isFixed
+let mainHeader, adminHeader
+
+async function setupScrollHandler() {
+
+	await nextTick()
+
+	esCard = document.getElementById('entrants-scroll-card')
+	mainHeader = document.getElementById('header')
+	adminHeader = document.getElementById('admin-header')
+
+	esOffset = mainHeader.clientHeight + adminHeader.clientHeight
+	isFixed = false
+
+	let ticking = false
+
+	document.addEventListener('scroll', () => {
+
+		if(!ticking) {
+			window.requestAnimationFrame(() => {
+				positionScrollCard()
+				ticking = false
+			})
+			ticking = true
+		}
+
+	})
+
+}
+
+
+function positionScrollCard() {
+
+	if(window.scrollY > esOffset) {
+		if(!isFixed) {
+			esCard.style.width = (+esCard.clientWidth + 2) + 'px'
+			lockEntrantsCard.value = true
+			isFixed = true
+		}
+	}
+	else {
+		if(isFixed) {
+			lockEntrantsCard.value = false
+			esCard.style.width = ''
+			isFixed = false
+		}
+	}
+
+}
+
+
+
 
 </script>
 <template>
@@ -91,31 +156,35 @@ function getOpponentMarkup(index) {
 		<p>{{ loadingError }}</p>
 	</div>
 	<div v-else class="division-matches">
-		<section class="entrants-listout card">
-			<article class="entrant-summary">
-				<h6>Entrants <span class="count">{{ entrants.length }}</span></h6>
-				<fieldset>
-					<button class="btn">Autofill Seeds</button>
-				</fieldset>
-			</article>
-			<article class="entrant-list">
-				<ol class="the-entrants">
-					<li v-for="(entrant,e) in entrants" :key="e" :class="{'the-entrant': true, 'is-moving': SELECTED == e, 'is-scheduled': false}" @click="selectEntrant(e)">
-						<p v-if="entrant.player1"><span v-if="+entrant.seed > 0" class="seed">{{ entrant.seed }}</span> {{ store.getPlayerName(entrant.player1) }}</p>
-						<p v-if="entrant.player2"><span v-if="+entrant.seed > 0" class="seed">{{ entrant.seed }}</span> {{ store.getPlayerName(entrant.player2) }}</p>
-						<img v-if="SELECTED == e" class="indicator" src="@/assets/images/radix-ui-arrow-right.svg" />
-					</li>
-				</ol>
-			</article>
+		<section class="entrants-listout">
+			<div :class="{card: true, 'lock-card': lockEntrantsCard}" id="entrants-scroll-card">
+				<article class="entrant-summary">
+					<h6>Entrants <span class="count">{{ entrants.length }}</span></h6>
+				</article>
+				<article class="entrant-list">
+					<ol class="the-entrants">
+						<li v-for="(entrant,e) in entrants" :key="e" :class="{'the-entrant': true, 'is-moving': SELECTED == e, 'is-scheduled': entrant.used}" @click="selectEntrant(e)">
+							<p v-if="entrant.player1"><span v-if="+entrant.seed > 0" class="seed">{{ entrant.seed }}</span> {{ store.getPlayerName(entrant.player1) }}</p>
+							<p v-if="entrant.player2"><span v-if="+entrant.seed > 0" class="seed">{{ entrant.seed }}</span> {{ store.getPlayerName(entrant.player2) }}</p>
+							<img v-if="SELECTED == e" class="indicator" src="@/assets/images/radix-ui-arrow-right.svg" />
+						</li>
+					</ol>
+				</article>
+			</div>
 		</section>
 		<section class="matches-listout">
-			<h5>Matchups</h5>
-			<Matchups :entrants="entrants" :selected="SELECTED" :opponent="OPPONENT" @place="handlePlaced" />
+			<h5>Opening Matchups</h5>
+			<Matchups :entrants="entrants" :selected="SELECTED" @place="handlePlaced" @clear="handleCleared" />
 		</section>
-		<section class="matches-confirmation card">
-			<article class="matches-summary">
-				<h6>Summary</h6>
-			</article>
+		<section class="matches-confirmation">
+			<div class="card">
+				<article class="matches-summary">
+					<h6>Scheduled <span class="count">{{ SLOTTED }} / {{ entrants.length }}</span></h6>
+					<fieldset :class="{disabled: SLOTTED < entrants.length}">
+						<button class="btn">Confirm Matchups</button>
+					</fieldset>
+				</article>
+			</div>
 		</section>
 	</div>
 	<SuperLoader v-if="loading">
@@ -151,13 +220,12 @@ function getOpponentMarkup(index) {
 		opacity: 0.32
 		+slm(0.8em, 1em, 0)
 
-	.entrant-summary
-		padding-bottom: 1rem
-
 	.the-entrants
-		margin: 0
-		padding: 0
+		margin: 0 -0.5rem 0 0
+		padding: 0 0.5rem 0 0
 		list-style: none outside
+		overflow: auto
+		max-height: 80vh
 
 		.the-entrant
 			padding: 0.5rem 0.75rem
@@ -167,12 +235,10 @@ function getOpponentMarkup(index) {
 			cursor: pointer
 			background: $background
 			transition: border 0.4s ease
+			margin-top: 1rem
 
 			&:hover
 				border-color: $text
-
-			+ .the-entrant
-				margin-top: 1rem
 
 			p
 				margin: 0
@@ -192,7 +258,22 @@ function getOpponentMarkup(index) {
 				opacity: 0.32
 
 			&.is-moving
-				border-style: dashed
-				transform: translateX(15%)
+				border: 1px dashed $text
+				background: $theme
 
+			&.is-scheduled
+				display: none
+
+	.lock-card
+		position: fixed
+		box-sizing: border-box
+		top: 1rem
+
+.matches-summary
+	fieldset
+		transition: opacity 0.4s ease
+
+		&.disabled
+			opacity: 0.3
+			pointer-events: none
 </style>

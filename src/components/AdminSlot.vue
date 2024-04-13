@@ -30,16 +30,18 @@ function stepTitle(completed, active) {
 </script>
 <template>
 	<div :class="{wrapper: true, 'wrap-max-lrg': true, 'desktop-only': props.desktop}">
-		<h2 class="admin-title"><img src="@/assets/images/radix-ui-double-right.svg" /> {{ props.name }}</h2>
-		<div v-if="props.steps" class="step-list">
-			<ol class="step-list-container">
-				<li v-for="(step, s) in props.steps" :key="s" :class="{step: true, 'is-complete': step.complete, 'is-active': props.activestep == s}" :title="stepTitle(step.complete, props.activestep == s)">
-					<span :class="{'step-status': true, 'is-completed': step.complete}">
-						<img src="@/assets/images/radix-ui-status.svg" />
-					</span>
-					<span class="step-name">{{ step.name }}</span>
-				</li>
-			</ol>
+		<div id="admin-header">
+			<h2 class="admin-title"><img src="@/assets/images/radix-ui-double-right.svg" /> {{ props.name }}</h2>
+			<div v-if="props.steps" class="step-list">
+				<ol class="step-list-container">
+					<li v-for="(step, s) in props.steps" :key="s" :class="{step: true, 'is-complete': step.complete, 'is-active': props.activestep == s}" :title="stepTitle(step.complete, props.activestep == s)">
+						<span :class="{'step-status': true, 'is-completed': step.complete}">
+							<img src="@/assets/images/radix-ui-status.svg" />
+						</span>
+						<span class="step-name">{{ step.name }}</span>
+					</li>
+				</ol>
+			</div>
 		</div>
 		<slot/>
 	</div>
@@ -118,6 +120,12 @@ function stepTitle(completed, active) {
 			+ .step
 				&:before
 					background: $theme
+
+#admin-header
+	padding-bottom: 1rem
+
+	> *:last-child
+		margin-bottom: 0
 
 .desktop-only
 	+untilLrg
