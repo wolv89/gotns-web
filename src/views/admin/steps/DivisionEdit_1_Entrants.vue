@@ -12,6 +12,7 @@ import EntrantList from '@/components/EntrantList.vue'
 const SEEDMAX = 8
 
 const props = defineProps(['division'])
+const emit = defineEmits(['success'])
 
 const loading = ref(false)
 const ferror = ref('')
@@ -136,7 +137,7 @@ async function confirmEntries() {
 	if(!error.value) {
 		const r = data.value
 		if(r.result) {
-			// Success ?
+			emit('success')
 		}
 		else {
 			ferror.value = r.response

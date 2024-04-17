@@ -1,38 +1,21 @@
 <script setup>
 
-import { ref, onMounted, computed } from 'vue'
+import { computed } from 'vue'
 
 import MatchupOpponent from '@/components/MatchupOpponent.vue'
 
-const props = defineProps(['entrants', 'selected'])
+const props = defineProps(['entrants', 'slots', 'selected'])
 const emit = defineEmits(['place', 'clear'])
 
-const slots = ref([])
-
-onMounted(() => {
-
-	let m = 1;
-
-	while(m < +props.entrants.length) {
-		m *= 2
-	}
-
-	const s = new Array(m)
-	for(let i = 0; i < m; i++)
-		s[i] = -1
-
-	slots.value = s
-
-})
 
 const matchups = computed(() => {
-	return slots.value.length / 2
+	return props.slots.length / 2
 })
 
 
 function placeOpponent(slot) {
 
-	slots.value[slot] = props.selected
+	props.slots[slot] = props.selected
 	emit('place')
 
 }
@@ -40,8 +23,8 @@ function placeOpponent(slot) {
 
 function clearOpponent(slot) {
 
-	emit('clear', slots.value[slot])
-	slots.value[slot] = -1
+	emit('clear', props.slots[slot])
+	props.slots[slot] = -1
 
 }
 
@@ -62,11 +45,11 @@ function slot2(m) {
 		<article v-for="m in matchups" class="match card dark-card">
 			<h6>Match {{ m }}</h6>
 			<div class="match-opponents">
-				<MatchupOpponent :slot="slot1(m)" :oppo="slots[slot1(m)]" @place="placeOpponent(slot1(m))" @clear="clearOpponent(slot1(m))" :selected="selected" />
+				<MatchupOpponent :slot="slot1(m)" :oppo="props.slots[slot1(m)]" @place="placeOpponent(slot1(m))" @clear="clearOpponent(slot1(m))" :selected="selected" />
 				<div class="oppo-divider">
 					<span>vs</span>
 				</div>
-				<MatchupOpponent :slot="slot2(m)" :oppo="slots[slot2(m)]" @place="placeOpponent(slot2(m))" @clear="clearOpponent(slot2(m))" :selected="selected" />
+				<MatchupOpponent :slot="slot2(m)" :oppo="props.slots[slot2(m)]" @place="placeOpponent(slot2(m))" @clear="clearOpponent(slot2(m))" :selected="selected" />
 			</div>
 		</article>
 	</div>

@@ -71,6 +71,7 @@ async function loadDivision() {
 
 
 async function getDivisionStatus() {
+	STEP.value = -1
 	const { data, error } = await useGo('/admin/division/' + division.value.id + '/status').json()
 	if(error.value) {
 		someError.value = error.value
@@ -142,8 +143,8 @@ onMounted(() => {
 		<p>Getting division status...</p>
 	</div>
 	<AdminSlot v-else :name="division.name + ' #Edit Division'" :desktop="true" :steps="STEPS" :activestep="STEP">
-		<Step1 v-if="STEP == 0" :division="division" />
-		<Step2 v-else-if="STEP == 1" :division="division" />
-		<Step3 v-else-if="STEP == 2" :division="division" />
+		<Step1 v-if="STEP == 0" :division="division" @success="getDivisionStatus" />
+		<Step2 v-else-if="STEP == 1" :division="division" @success="getDivisionStatus" />
+		<Step3 v-else-if="STEP == 2" :division="division" @success="getDivisionStatus" />
 	</AdminSlot>
 </template>

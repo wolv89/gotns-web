@@ -8,6 +8,7 @@ import SuperLoader from '@/components/SuperLoader.vue'
 import Matchups from '@/components/Matchups.vue'
 
 const props = defineProps(['division'])
+const emit = defineEmits(['success'])
 
 const loadedEntrants = ref(false)
 const loadingError = ref('')
@@ -15,10 +16,14 @@ const entrants = ref([])
 
 const SELECTED = ref(null)
 const SLOTTED = ref(0)
+const SLOTS = ref([])
+
 provide('getOpponentMarkup', getOpponentMarkup)
 
 const lockEntrantsCard = ref(false)
 const loading = ref(false)
+const ferror = ref(null)
+
 
 
 async function loadEntrants() {
@@ -28,15 +33,28 @@ async function loadEntrants() {
 		entrants.value = null
 	}
 	else {
+
 		entrants.value = data.value
 		for(let e in entrants.value) {
 			entrants.value[e].used = false
 		}
+
+		let m = 1;
+
+		while(m < +entrants.value.length) {
+			m *= 2
+		}
+
+		const s = new Array(m)
+		for(let i = 0; i < m; i++)
+			s[i] = -1
+
+		SLOTS.value = s
+
 	}
 	loadedEntrants.value = true
 	setupScrollHandler()
 }
-
 
 onMounted(() => {
 	loadEntrants()
@@ -143,6 +161,50 @@ function positionScrollCard() {
 }
 
 
+async function confirmMatchups() {
+
+	ferror.value = null
+
+	loading.value = true
+
+	const l = SLOTS.value.length / 2
+	let matchups = new Array(l)
+	let e1, e2
+
+	for(let m = 0; m < l; m++) {
+
+		e1 = SLOTS.value[m * 2]
+		e2 = SLOTS.value[(m * 2) + 1]
+
+		if(e1 >= 0) e1 = entrants.value[e1].id
+		else e1 = 0
+
+		if(e2 >= 0) e2 = entrants.value[e2].id
+		else e2 = 0
+
+		matchups[m] = {
+			entrant1: e1,
+			entrant2: e2
+		}
+
+	}
+
+	const { data, error } = await useGo('/admin/division/' + props.division.id + '/matches/new', {
+		body: JSON.stringify(matchups)
+	}).post()
+
+	if(!error.value) {
+		emit('success')
+	}
+	else {
+		ferror.value = error.value
+	}
+
+	loading.value = false
+
+}
+
+
 
 
 </script>
@@ -174,15 +236,16 @@ function positionScrollCard() {
 		</section>
 		<section class="matches-listout">
 			<h5>Opening Matchups</h5>
-			<Matchups :entrants="entrants" :selected="SELECTED" @place="handlePlaced" @clear="handleCleared" />
+			<Matchups :entrants="entrants" :slots="SLOTS" :selected="SELECTED" @place="handlePlaced" @clear="handleCleared" />
 		</section>
 		<section class="matches-confirmation">
 			<div class="card">
 				<article class="matches-summary">
 					<h6>Scheduled <span class="count">{{ SLOTTED }} / {{ entrants.length }}</span></h6>
 					<fieldset :class="{disabled: SLOTTED < entrants.length}">
-						<button class="btn">Confirm Matchups</button>
+						<button @click.prevent="confirmMatchups" class="btn">Confirm Matchups</button>
 					</fieldset>
+					<p v-if="ferror" class="error-message">{{ ferror }}</p>
 				</article>
 			</div>
 		</section>

@@ -13,7 +13,8 @@
 <style lang="sass">
 .super-loader
 	background: rgba(255,255,255,0.9)
-	position: absolute
+	position: fixed
+	z-index: 999
 	top: 0
 	left: 0
 	width: 100%
