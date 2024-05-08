@@ -112,19 +112,20 @@ async function confirmEntries() {
 	loading.value = true
 
 	const teams = props.division.teams ? 1 : 0
+	const submission = []
 
 	for(let e in entries.value) {
 		const entry = entries.value[e]
 		if(teams) {
 			submission.push({
-				player1: entry.player1.id,
-				player2: entry.player2.id,
+				player1: entry.player1,
+				player2: entry.player2,
 				seed: entry.seed
 			})
 		}
 		else {
 			submission.push({
-				player1: entry.player1.id,
+				player1: entry.player1,
 				seed: entry.seed
 			})
 		}

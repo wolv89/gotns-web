@@ -26,6 +26,7 @@ export const store = reactive({
 	players: [],
 	playermap: new Map(),
 	addPlayer(newplayer) {
+		if(!this.players) this.players = [];
 		this.players.push(newplayer)
 		this.playermap.set(newplayer.id, newplayer)
 	},
